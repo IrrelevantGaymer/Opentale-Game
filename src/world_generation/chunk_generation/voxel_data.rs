@@ -7,8 +7,8 @@ use crate::world_generation::chunk_generation::{
 
 use super::CHUNK_SIZE;
 
-pub type VoxelArray =
-    [BlockType; (CHUNK_SIZE + 2) * (CHUNK_SIZE + 2) * (CHUNK_SIZE + 2)];
+pub const VOXEL_ARRAY_LENGTH: usize = (CHUNK_SIZE + 2).pow(3);
+pub type VoxelArray = [BlockType; VOXEL_ARRAY_LENGTH];
 
 pub struct VoxelData {
     pub array: VoxelArray,
@@ -17,8 +17,7 @@ pub struct VoxelData {
 impl Default for VoxelData {
     fn default() -> Self {
         Self {
-            array: [BlockType::Air;
-                (CHUNK_SIZE + 2) * (CHUNK_SIZE + 2) * (CHUNK_SIZE + 2)],
+            array: [BlockType::Air; VOXEL_ARRAY_LENGTH],
         }
     }
 }
