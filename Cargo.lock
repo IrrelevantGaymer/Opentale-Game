@@ -3724,6 +3724,7 @@ dependencies = [
  "rand 0.9.1",
  "ron 0.10.1",
  "serde",
+ "static_assertions",
  "vox-format",
 ]
 

@@ -47,6 +47,7 @@ egui_node_editor = {version = "=0.7.0", features = ["persistence"]}
 anyhow = "1.0.98"
 serde = "1.0.219"
 ron = "0.10.1"
+static_assertions = "1.1.0"
 
 [dev-dependencies]
 brunch = "0.5.0"

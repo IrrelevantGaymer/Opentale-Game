@@ -1,4 +1,5 @@
 pub mod array_texture;
+pub mod blocks;
 pub mod chunk_generation;
 pub mod chunk_loading;
 pub mod generation_assets;
