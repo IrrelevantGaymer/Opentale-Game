@@ -33,7 +33,7 @@ impl IsBlock for Basic {
         self.face.indices().iter().map(|i| *i + offset).collect()
     }
 
-    fn mesh_type(&self) -> MeshType {
+    fn mesh_type(&self, _dir: FaceDir) -> MeshType {
         self.mesh_type
     }
 }

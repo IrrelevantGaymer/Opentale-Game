@@ -23,5 +23,5 @@ pub trait IsBlock: Send + Sync {
     fn get_vertices(&self, dir: FaceDir) -> Box<[Vertex]>;
     fn num_vertices(&self, dir: FaceDir) -> usize;
     fn get_indices(&self, dir: FaceDir, offset: usize) -> Box<[Index]>;
-    fn mesh_type(&self) -> MeshType;
+    fn mesh_type(&self, dir: FaceDir) -> MeshType;
 }

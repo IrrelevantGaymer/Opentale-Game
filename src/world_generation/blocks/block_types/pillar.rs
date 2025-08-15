@@ -3,14 +3,14 @@ use crate::world_generation::blocks::{block::IsBlock, face::{Face, FaceDir, Inde
 pub struct Pillar {
     name: &'static str,
     faces: [Face; 3],
-    mesh_type: MeshType
+    mesh_type: [MeshType; 3]
 }
 
 impl Pillar {
     pub fn new(
         name: &'static str, 
         faces: [Face; 3], 
-        mesh_type: MeshType
+        mesh_type: [MeshType; 3]
     ) -> Self {
         Self { name, faces, mesh_type }
     }
@@ -52,7 +52,7 @@ impl IsBlock for Pillar {
             .collect()
     }
 
-    fn mesh_type(&self) -> MeshType {
-        self.mesh_type
+    fn mesh_type(&self, dir: FaceDir) -> MeshType {
+        self.mesh_type[Self::face_index(dir)]
     }
 }

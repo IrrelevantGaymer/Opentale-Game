@@ -16,11 +16,8 @@ pub struct PillarBuilder {
     culling_flags: PillarFaces<CullingFlag>,
     /// a number that represents this block in memory
     id: usize,
-    /// a value that represents the index 
-    /// of this block's corresponding texture and material
-    index: usize,
     /// defines what kind of meshes includes this block
-    mesh_type: MeshType
+    mesh_types: PillarFaces<MeshType>
 }
 
 impl PillarBuilder {
@@ -34,8 +31,16 @@ impl PillarBuilder {
     //     self
     // } 
 
-    pub const fn with_mesh_type(mut self, mesh_type: MeshType) -> Self {
-        self.mesh_type = mesh_type;
+    pub const fn with_mesh_type_all(mut self, mesh_type: MeshType) -> Self {
+        self.mesh_types = PillarFaces::new_all(mesh_type);
+        self
+    }
+
+    pub const fn with_mesh_types(
+        mut self, 
+        mesh_types: PillarFaces<MeshType>
+    ) -> Self {
+        self.mesh_types = mesh_types;
         self
     }
 
@@ -60,8 +65,7 @@ impl const Buildable for PillarBuilder {
                 down: CullingFlag::Both
             },
             id: 0,
-            index: 0,
-            mesh_type: MeshType::Normal,
+            mesh_types: PillarFaces::new_all(MeshType::Normal),
         }
     }
     fn get_texture_size() -> usize {1usize}
@@ -96,13 +100,24 @@ impl CanBuild for PillarBuilder {
                 Face::new(self.index + 1, self.culling_flags.sides),
                 Face::new(self.index + 2, self.culling_flags.down),
             ],
-            self.mesh_type
+            [
+                self.mesh_types.up,
+                self.mesh_types.sides,
+                self.mesh_types.down
+            ]
         ))
     }
 }
 
 pub struct PillarFaces<T> {
-    up: T,
-    sides: T,
-    down: T
+impl<T> PillarFaces<T> {
+    const fn new_all(all: T) -> Self where T: Copy {
+        Self {
+            up: all,
+            sides: all,
+            down: all
+        }
+    }
+}
+
 }
