@@ -47,14 +47,14 @@ pub fn load_block_texture_assets(
 ) {
     let mut block_textures = Vec::new();
 
-    block_textures.push(asset_server.load("grass_top.png"));
-    block_textures.push(asset_server.load("stone.png"));
-    block_textures.push(asset_server.load("snow.png"));
-    block_textures.push(asset_server.load("sassafras_log.png"));
-    block_textures.push(asset_server.load("sassafras_log_top.png"));
-    block_textures.push(asset_server.load("default_leaves.png"));
-    block_textures.push(asset_server.load("grass_side.png"));
-    block_textures.push(asset_server.load("default_dirt.png"));
+    block_textures.push(asset_server.load("textures/grass_top.png"));
+    block_textures.push(asset_server.load("textures/stone.png"));
+    block_textures.push(asset_server.load("textures/snow.png"));
+    block_textures.push(asset_server.load("textures/sassafras_log.png"));
+    block_textures.push(asset_server.load("textures/sassafras_log_top.png"));
+    block_textures.push(asset_server.load("textures/default_leaves.png"));
+    block_textures.push(asset_server.load("textures/grass_side.png"));
+    block_textures.push(asset_server.load("textures/default_dirt.png"));
 
     commands.insert_resource(BlockTextureAssets { block_textures });
 
