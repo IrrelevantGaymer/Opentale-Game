@@ -2,7 +2,7 @@
 #[macro_export]
 macro_rules! table {
     (
-        $slice:path, 
+        $slice:path, $build:path,
         enum $enum:ident,
         static $table:ident = {
             $(let $block_name:ident : $block_type:ty = $block_expr:expr ;)*
@@ -23,7 +23,7 @@ macro_rules! table {
         );
 
         $crate::enum_define!(
-            $enum, $slice,
+            $enum, $slice, $build,
             $($block_name : $block_type),*
         );
     };
@@ -69,16 +69,7 @@ macro_rules! items_define {
                     ::buildable
                     ::Buildable
             >::with_id(
-                <
-                    $first_type as 
-                    $crate::world_generation
-                        ::blocks
-                        ::buildable
-                        ::Buildable
-                >::with_index(
-                    $first_expr, 
-                    $idx
-                ),
+                $first_expr,
                 $id
             );
         $crate::items_define!(
@@ -113,8 +104,8 @@ macro_rules! table_define {
         pub static $table_name : $crate::world_generation
             ::blocks
             ::table
-            ::Table<dyn $slice> 
-        = $crate::world_generation::blocks::table::Table(&[
+            ::BuilderTable<dyn $slice> 
+        = $crate::world_generation::blocks::table::BuilderTable(&[
             $(& $block_name),*
         ]);
     }
@@ -124,7 +115,7 @@ macro_rules! table_define {
 macro_rules! enum_define {
     (
         $enum_name:ident, 
-        $slice:path, 
+        $slice:path, $build:path, 
         $($block_name:ident : $block_type:ty),*
     ) => {
         pub enum $enum_name {
@@ -231,16 +222,14 @@ macro_rules! enum_define {
             }
         }
 
-        impl std::ops::Index<$enum_name> for 
-            $crate::world_generation::blocks::table::Table<dyn $slice> 
-        {
-            type Output = dyn $slice;
-        
-            fn index(&self, index: $enum_name) -> &Self::Output {
-                let idx = index.index() - 1;
-                // use index.inner_id() to grab modified versions of blocks
-                // such as rotated or reflected blocks
-                self.0[idx]
+        impl std::ops::Index<$enum_name> for $crate::world_generation::blocks::table::Table<$build> {
+            type Output = $build;
+
+            fn index(&self, idx: $enum_name) -> &Self::Output {
+                let index = idx.index();
+                unsafe {
+                    self.get_unchecked(index)
+                }
             }
         }
     }

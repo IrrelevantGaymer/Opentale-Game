@@ -4,6 +4,8 @@ use crate::world_generation::blocks::buildable::{Buildable, CanBuild, HasBuildVa
 
 use crate::world_generation::blocks::face::{CullingFlag, Face};
 use crate::world_generation::blocks::mesh_type::MeshType;
+use crate::world_generation::blocks::texture_builder::TextureBuilder;
+use crate::world_generation::blocks::DEFAULT_TEXTURE;
 
 /// A Block where all faces use the same texture and model
 pub struct BasicBuilder {
@@ -16,9 +18,6 @@ pub struct BasicBuilder {
     culling_flag: CullingFlag,
     /// a number that represents this block in memory
     id: usize,
-    /// a value that represents the index 
-    /// of this block's corresponding texture and material
-    index: usize,
     /// defines what kind of meshes includes this block
     mesh_type: MeshType
 }
@@ -56,18 +55,10 @@ impl const Buildable for BasicBuilder {
             //model: None,
             culling_flag: CullingFlag::Both,
             id: 0,
-            index: 0,
             mesh_type: MeshType::Normal,
         }
     }
     fn get_texture_size() -> usize {1usize}
-    fn with_index(mut self, idx: usize) -> Self {
-        self.index = idx;
-        self
-    }
-    fn set_index(&mut self, idx: usize) {
-        self.index = idx;
-    }
     fn with_id(mut self, id: usize) -> Self {
         self.id = id;
         self
@@ -82,13 +73,17 @@ impl HasBuildVariants for BasicBuilder {
 }
 
 impl CanBuild for BasicBuilder {
-    fn build(self) -> BlockType {
+    type BuildTo = BlockType;
+
+    fn build(&self, texture_builder: &mut TextureBuilder) -> BlockType {
         //TODO: extract uvs and vertices from model
         //TODO: extract normals, material, depth map, etc.
         BlockType::Basic(Basic::new(
             self.name, 
             Face::new(
-                self.index, 
+                texture_builder.get_index_from_texture(
+                    self.texture.unwrap_or(DEFAULT_TEXTURE)
+                ), 
                 self.culling_flag
             ), 
             self.mesh_type

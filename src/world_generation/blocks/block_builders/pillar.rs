@@ -4,6 +4,8 @@ use crate::world_generation::blocks::buildable::{Buildable, CanBuild, HasBuildVa
 
 use crate::world_generation::blocks::face::{CullingFlag, Face};
 use crate::world_generation::blocks::mesh_type::MeshType;
+use crate::world_generation::blocks::texture_builder::TextureBuilder;
+use crate::world_generation::blocks::DEFAULT_TEXTURE;
 
 /// A Block where all faces use the same texture and model
 pub struct PillarBuilder {
@@ -69,13 +71,6 @@ impl const Buildable for PillarBuilder {
         }
     }
     fn get_texture_size() -> usize {1usize}
-    fn with_index(mut self, idx: usize) -> Self {
-        self.index = idx;
-        self
-    }
-    fn set_index(&mut self, idx: usize) {
-        self.index = idx;
-    }
     fn with_id(mut self, id: usize) -> Self {
         self.id = id;
         self
@@ -90,15 +85,38 @@ impl HasBuildVariants for PillarBuilder {
 }
 
 impl CanBuild for PillarBuilder {
-    fn build(self) -> BlockType {
+    type BuildTo = BlockType;
+
+    fn build(&self, texture_builder: &mut TextureBuilder) -> BlockType {
         //TODO: extract uvs and vertices from model
         //TODO: extract normals, material, depth map, etc.
         BlockType::Pillar(Pillar::new(
             self.name, 
             [
-                Face::new(self.index + 0, self.culling_flags.up),
-                Face::new(self.index + 1, self.culling_flags.sides),
-                Face::new(self.index + 2, self.culling_flags.down),
+                Face::new(
+                    texture_builder.get_index_from_texture(
+                        self.textures
+                            .get_texture(PillarFace::Up)
+                            .unwrap_or(DEFAULT_TEXTURE)
+                    ),
+                    self.culling_flags.up
+                ),
+                Face::new(
+                    texture_builder.get_index_from_texture(
+                        self.textures
+                            .get_texture(PillarFace::Sides)
+                            .unwrap_or(DEFAULT_TEXTURE)
+                    ), 
+                    self.culling_flags.sides
+                ),
+                Face::new(
+                    texture_builder.get_index_from_texture(
+                        self.textures
+                            .get_texture(PillarFace::Down)
+                            .unwrap_or(DEFAULT_TEXTURE)
+                    ), 
+                    self.culling_flags.down
+                ),
             ],
             [
                 self.mesh_types.up,
@@ -110,6 +128,11 @@ impl CanBuild for PillarBuilder {
 }
 
 pub struct PillarFaces<T> {
+    pub up: T,
+    pub sides: T,
+    pub down: T
+}
+
 impl<T> PillarFaces<T> {
     const fn new_all(all: T) -> Self where T: Copy {
         Self {
@@ -120,4 +143,24 @@ impl<T> PillarFaces<T> {
     }
 }
 
+pub enum PillarFace {
+    Up, Sides, Down
+}
+
+trait GetTexture {
+    type Output;
+
+    fn get_texture(&self, face: PillarFace) -> Self::Output;
+}
+
+impl<T> GetTexture for Option<PillarFaces<T>> where T: Copy {
+    type Output = Option<T>;
+
+    fn get_texture(&self, face: PillarFace) -> Self::Output {
+        match face {
+            PillarFace::Up => self.as_ref().map(|faces| faces.up),
+            PillarFace::Sides => self.as_ref().map(|faces| faces.sides),
+            PillarFace::Down => self.as_ref().map(|faces| faces.down),
+        }
+    }
 }

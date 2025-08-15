@@ -1,4 +1,4 @@
-use crate::world_generation::blocks::{as_id::AsId, block_types::BlockType};
+use crate::world_generation::blocks::{as_id::AsId, texture_builder::TextureBuilder};
 
 #[const_trait]
 pub trait Buildable: HasBuildVariants + CanBuild {
@@ -9,8 +9,6 @@ pub trait Buildable: HasBuildVariants + CanBuild {
     /// connecting blocks, etc.  Most blocks don't have blockstates,
     /// so the default is 1.
     fn get_id_span() -> usize { 1usize }
-    fn with_index(self, idx: usize) -> Self;
-    fn set_index(&mut self, idx: usize);
     fn with_id(self, id: usize) -> Self;
     fn set_id(&mut self, id: usize);
 }
@@ -20,5 +18,7 @@ pub trait HasBuildVariants {
 }
 
 pub trait CanBuild: Send + Sync {
-    fn build(self) -> BlockType;
+    type BuildTo;
+
+    fn build(&self, texture_builder: &mut TextureBuilder) -> Self::BuildTo;
 }
