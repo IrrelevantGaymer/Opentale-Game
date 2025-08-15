@@ -19,6 +19,10 @@ impl<T: 'static + ?Sized> IntoIterator for &BuilderTable<T> {
 pub struct Table<T>(Box<[T]>);
 
 impl<T> Table<T> {
+    pub fn new(table: Box<[T]>) -> Self {
+        Table(table)
+    }
+
     pub fn get(&self, idx: usize) -> Option<&T> {
         self.0.get(idx)
     }

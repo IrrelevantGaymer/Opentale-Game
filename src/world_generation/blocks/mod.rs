@@ -3,7 +3,7 @@ use bevy::app::Plugin;
 use crate::{
     table, 
     world_generation::blocks::{
-        block::Block, block_builders::{basic::BasicBuilder, pillar::PillarBuilder}, block_types::BlockType, buildable::CanBuild, face::CullingFlag
+        block::Block, block_builders::{basic::BasicBuilder, pillar::PillarBuilder}, block_types::BlockType, buildable::CanBuild, face::CullingFlag, table::Table, texture_builder::TextureBuilder
     }
 };        
 
@@ -40,4 +40,15 @@ impl Plugin for BlocksPlugin {
     fn build(&self, _app: &mut bevy::app::App) {
         
     }
+}
+
+fn build_table() {
+    let mut blocks = vec![];
+    let mut texture_builder = TextureBuilder::new();
+
+    for builder in &BLOCK_BUILDERS {
+        blocks.push(builder.build(&mut texture_builder));
+    }
+
+    let table = Table::new(blocks.into_boxed_slice());
 }
